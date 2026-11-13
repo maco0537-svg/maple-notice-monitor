@@ -1,0 +1,19 @@
+
+name: Discord 5-minute test
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  discord-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send test message
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          pip install requests
+          python -c "import os,requests; r=requests.post(os.environ['DISCORD_WEBHOOK_URL'],json={'content':'테스트-'},timeout=15); r.raise_for_status()"
