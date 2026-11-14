@@ -1,0 +1,19 @@
+
+name: Schedule Check
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  schedule-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Discord test message
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          pip install requests
+          python -c "import os,requests; r=requests.post(os.environ['DISCORD_WEBHOOK_URL'],json={'content':'새 예약 테스트 - GitHub 스케줄 실행 확인!'},timeout=15); r.raise_for_status()"
