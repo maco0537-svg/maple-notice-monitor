@@ -1,5 +1,5 @@
 
-name: Discord 5-minute test
+name: Discord schedule refresh
 
 on:
   schedule:
