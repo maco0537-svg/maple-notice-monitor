@@ -3,7 +3,7 @@ name: Discord 5-minute test
 
 on:
   schedule:
-  - cron: "35 * * * *"
+  - cron: "*/5 * * * *"
   workflow_dispatch:
 
 jobs:
