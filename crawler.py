@@ -23,38 +23,37 @@ def save_sent(sent):
     )
 
 
+
 def get_notices(page):
     page.goto(URL, wait_until="domcontentloaded", timeout=60000)
-    page.wait_for_timeout(2500)
+    page.wait_for_timeout(3000)
 
     results = []
-    links = page.locator('a[href^="/news/notices/"]')
+    links = page.locator('a[href*="/news/notices/"]')
 
     for i in range(links.count()):
         item = links.nth(i)
-        title_element = item.locator("span.text-base").first
-        date_element = item.locator("time").first
-
-        if not title_element.count() or not date_element.count():
-            continue
-
         href = item.get_attribute("href")
+
         if not href:
             continue
 
         notice_id = href.rstrip("/").split("/")[-1]
-        title = title_element.inner_text().strip()
+        title = " ".join(item.inner_text().split())
 
-        if notice_id and title:
+        if notice_id.isdigit() and title:
+            url = href if href.startswith("http") else "https://mapleplanet.io" + href
+
             results.append({
                 "id": notice_id,
                 "title": title,
-                "url": "https://mapleplanet.io" + href,
+                "url": url,
             })
 
     if not results:
         raise RuntimeError("공지 목록을 찾지 못했습니다.")
 
+    print(f"공지 {len(results)}개 발견!")
     return results
 
 
