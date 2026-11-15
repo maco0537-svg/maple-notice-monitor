@@ -23,39 +23,51 @@ def save_sent(sent):
     )
 
 
-
 def get_notices(page):
     page.goto(URL, wait_until="domcontentloaded", timeout=60000)
-    page.wait_for_timeout(3000)
+    page.wait_for_timeout(5000)
+
+    print("현재 페이지:", page.url)
+    print("페이지 제목:", page.title())
+
+    all_links = page.locator("a").evaluate_all("""
+        elements => elements.map(a => ({
+            href: a.href,
+            text: a.innerText.trim()
+        }))
+    """)
+
+    notice_links = [
+        link for link in all_links
+        if "/news/notices/" in link["href"]
+    ]
+
+    print("전체 링크 수:", len(all_links))
+    print("공지 링크 수:", len(notice_links))
+
+    for link in notice_links[:10]:
+        print("공지 링크 확인:", link)
 
     results = []
-    links = page.locator('a[href*="/news/notices/"]')
 
-    for i in range(links.count()):
-        item = links.nth(i)
-        href = item.get_attribute("href")
-
-        if not href:
-            continue
-
+    for link in notice_links:
+        href = link["href"]
         notice_id = href.rstrip("/").split("/")[-1]
-        title = " ".join(item.inner_text().split())
+        title = " ".join(link["text"].split())
 
         if notice_id.isdigit() and title:
-            url = href if href.startswith("http") else "https://mapleplanet.io" + href
-
             results.append({
                 "id": notice_id,
                 "title": title,
-                "url": url,
+                "url": href,
             })
 
     if not results:
+        print("페이지 HTML 일부:", page.locator("body").inner_text()[:1000])
         raise RuntimeError("공지 목록을 찾지 못했습니다.")
 
     print(f"공지 {len(results)}개 발견!")
     return results
-
 
 def send_discord(notice):
     response = requests.post(
