@@ -24,8 +24,15 @@ try:
 
     print("HTTP 상태 코드:", response.status_code)
     print("응답 형식:", response.headers.get("content-type"))
-    print("응답 내용 앞부분:")
-    print(response.text[:3000])
+    print("응답 전체 길이:", len(response.text))
+
+for keyword in ["publishedAt", "title", "라이브", "공지", "posts"]:
+    position = response.text.find(keyword)
+
+    print(f"\n[{keyword}] 위치:", position)
+
+    if position != -1:
+        print(response.text[max(0, position - 300):position + 700])
 
     if "Performing security verification" in response.text:
         print("결과: Cloudflare 보안 차단")
