@@ -27,27 +27,37 @@ HEADERS = {
 }
 
 
+
 def load_history():
+    print(f"기록 파일 경로: {DATA_FILE.resolve()}")
+    print(f"기록 파일 존재 여부: {DATA_FILE.exists()}")
+
     if not DATA_FILE.exists():
+        print("기록 파일을 찾지 못했습니다.")
         return set()
 
     try:
         data = json.loads(DATA_FILE.read_text(encoding="utf-8"))
 
         if isinstance(data, list):
-            return {str(item) for item in data}
-
-        if isinstance(data, dict):
+            result = {str(item) for item in data}
+        elif isinstance(data, dict):
+            result = set()
             for key in ("ids", "notices", "sent"):
                 if isinstance(data.get(key), list):
-                    return {str(item) for item in data[key]}
+                    result = {str(item) for item in data[key]}
+                    break
+            else:
+                result = {str(key) for key in data.keys()}
+        else:
+            result = set()
 
-            return {str(key) for key in data.keys()}
+        print(f"기존 공지 기록 {len(result)}개 불러오기 완료")
+        return result
 
-    except (json.JSONDecodeError, OSError):
-        pass
-
-    return set()
+    except (json.JSONDecodeError, OSError) as error:
+        print(f"기록 파일 읽기 실패: {error}")
+        return set()
 
 
 def save_history(sent_ids):
