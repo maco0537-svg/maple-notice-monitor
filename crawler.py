@@ -313,8 +313,7 @@ def main():
     ]
 
     if not new_notices:
-        print("새 공지가 없습니다. 테스트 전송을 시작합니다.")
-        send_discord(notices[0])
+        print("새 공지가 없습니다.")
         return
 
     print(f"새 공지 {len(new_notices)}개 발견!")
